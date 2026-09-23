@@ -1,0 +1,43 @@
+{
+  "name": "@auipage/vue",
+  "version": "0.1.0-alpha.1",
+  "description": "Vue版本的智能体UI组件库",
+  "typings": "./types/index.d.ts",
+  "main": "./dist/auipage-vue.umd.cjs",
+  "module": "./dist/auipage-vue.js",
+  "unpkg": "./dist/auipage-vue.iife.js",
+  "jsdelivr": "./dist/auipage-vue.iife.js",
+  "sideEffects": false,
+  "scripts": {
+    "dev": "oipage-cli run \"node ./server/index.js\" \"vite\"",
+    "build": "vite build"
+  },
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/handless-ui/auipage-vue.git"
+  },
+  "keywords": [
+    "ui",
+    "page",
+    "agent"
+  ],
+  "author": "zxl20070701",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/handless-ui/auipage-vue/issues"
+  },
+  "homepage": "https://github.com/handless-ui/auipage-vue#readme",
+  "devDependencies": {
+    "@auipage/agent": "^0.1.0-alpha.1",
+    "@auipage/fetch": "^0.1.0-alpha.1",
+    "@oipage/cli": "^0.2.1",
+    "@types/node": "^26.6.1",
+    "@vitejs/plugin-vue": "^5.1.0",
+    "vite": "^5.3.4",
+    "vue": "^3.4.34"
+  },
+  "dependencies": {
+    "@auipage/core": "^0.1.0-alpha.1"
+  }
+}
