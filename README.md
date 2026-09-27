@@ -144,6 +144,15 @@ import adapter from "./adapter";
 
 启动后输入消息，即可看到流式回复。需要多会话管理时，再按同样的方式引入 `ThreadList` 组件即可。
 
+### 进阶文档
+
+简单例子只覆盖了主干流程，更多细节分章节说明：
+
+- [适配器（Adapter）](./docs/adapter.md)：对接真实后端、SSE 流式输出、`generator` 与工具结果回传
+- [聊天视图 ChatContent](./docs/chat-content.md)：消息片段类型、自定义渲染、输入区定制
+- [会话列表 ThreadList](./docs/thread-list.md)：新建、归档、取消归档与删除
+- [前端工具 defineTool](./docs/tools.md)：注册前端工具及带交互的 `render` 组件
+
 ## 版权
 
 MIT License
