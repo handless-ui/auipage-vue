@@ -1,6 +1,6 @@
 {
   "name": "@auipage/vue",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0",
   "description": "Vue版本的智能体UI组件库",
   "typings": "./types/index.d.ts",
   "main": "./dist/auipage-vue.umd.cjs",
@@ -29,8 +29,8 @@
   },
   "homepage": "https://github.com/handless-ui/auipage-vue#readme",
   "devDependencies": {
-    "@auipage/agent": "^0.1.0-alpha.1",
-    "@auipage/fetch": "^0.1.0-alpha.1",
+    "@auipage/agent": "^0.1.0",
+    "@auipage/fetch": "^0.1.0",
     "@oipage/cli": "^0.2.1",
     "@types/node": "^26.6.1",
     "@vitejs/plugin-vue": "^5.1.0",
@@ -38,6 +38,6 @@
     "vue": "^3.4.34"
   },
   "dependencies": {
-    "@auipage/core": "^0.1.0-alpha.1"
+    "@auipage/core": "^0.1.0"
   }
 }
