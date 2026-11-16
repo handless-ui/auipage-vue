@@ -1,0 +1,101 @@
+<!--meta {"title": "安装与接入 · @auipage/vue 文档", "desc": "@auipage/vue 的依赖、安装、三步接入与 CDN 用法。", "section": "guide", "demos": false}-->
+<div class="pagehead"><span class="ph-deco" aria-hidden="true"></span><div class="crumbs"><a href="{{base}}index.html">文档</a><span class="sep">/</span><span>指南</span><span class="sep">/</span><span>安装与接入</span></div>
+<h1><em>Guide 01</em>安装与接入</h1>
+<p class="lede">装包、写三套适配器、挂 Provider —— 三步之后你就有了一套能用的对话界面骨架，样式待你填。</p>
+<div class="badges"><span class="badge">vue 0.1.0</span><span class="badge hi">Vue 3</span><span class="badge">@auipage/core 0.1.0</span></div></div>
+
+<section class="block">
+  <div class="block-head"><span class="idx">01</span><h2>环境与依赖</h2></div>
+  <div class="prose">
+  <p>组件是纯 Vue 3 实现，运行时由 <code>@auipage/core</code> 提供，装 <code>@auipage/vue</code> 时会自动带上。</p>
+  <div class="table-wrap"><table class="spec">
+  <thead><tr><th>依赖</th><th>版本</th><th>作用</th></tr></thead>
+  <tbody><tr><td><code>vue</code></td><td><code>^3.4.34</code></td><td>组件宿主框架，用 <code>defineComponent</code> + <code>h</code> 渲染，不依赖模板编译器。</td></tr><tr><td><code>@auipage/core</code></td><td><code>^0.1.0</code></td><td>编排器 <code>AuiPage</code>、适配器基类与 <code>generator</code>。</td></tr></tbody>
+</table></div>
+  <p>库里没有 CSS 文件，也不需要引入任何样式资源。</p>
+</div>
+</section>
+
+<section class="block">
+  <div class="block-head"><span class="idx">02</span><h2>安装</h2></div>
+  <div class="code">
+  <div class="code-head"><span class="file">terminal</span><button data-copy="">复制</button></div>
+  <div class="code-body"><pre>npm install @auipage/vue</pre></div>
+</div>
+</section>
+
+<section class="block">
+  <div class="block-head"><span class="idx">03</span><h2>三步接入</h2></div>
+  <div class="prose">
+  <p><b>第一步：适配器。</b>三个实例按固定 key 装进一个对象。</p>
+  <div class="code">
+  <div class="code-head"><span class="file">adapter.ts</span><button data-copy="">复制</button></div>
+  <div class="code-body"><pre>import {
+    ChatTransportAdapter,
+    MessageHistoryAdapter,
+    ThreadListAdapter,
+} from "@auipage/vue";
+
+export default {
+    ChatTransport: new ChatTransportAdapter({ /* run / response */ }),
+    MessageHistory: new MessageHistoryAdapter({ /* load / append */ }),
+    ThreadList: new ThreadListAdapter({ /* list / new / archive / ... */ }),
+};</pre></div>
+</div>
+  <p style="margin-top:16px"><b>第二步：Provider。</b>挂载时它会立刻调用一次 <code>ThreadList.list()</code>。</p>
+  <div class="code">
+  <div class="code-head"><span class="file">App.vue</span><button data-copy="">复制</button></div>
+  <div class="code-body"><pre>&lt;script setup&gt;
+import { AuiRuntimeProvider, ChatContent, ThreadList } from "@auipage/vue";
+import adapter from "./adapter";
+&lt;/script&gt;
+
+&lt;template&gt;
+    &lt;AuiRuntimeProvider :adapter="adapter" :tools="tools"&gt;
+<span class="c">        &lt;!-- ChatContent / ThreadList --&gt;</span>
+    &lt;/AuiRuntimeProvider&gt;
+&lt;/template&gt;</pre></div>
+</div>
+  <p style="margin-top:16px"><b>第三步：搭界面。</b>组件是命名空间对象，模板里按层级组合；样式通过 class 钩子接管。</p>
+  <p>细节见 <a href="./adapter.html">适配器</a>、<a href="./components.html">组件 API</a>、
+  <a href="./tools.html">前端工具</a>、<a href="./runtime.html">数据流与状态</a>。</p>
+</div>
+</section>
+
+<section class="block">
+  <div class="block-head"><span class="idx">04</span><h2>不打包，直接引用</h2></div>
+  <div class="prose">
+  <p>IIFE 构建通过全局 <code>Vue</code> 使用 Vue，库本身的全局名是 <code>AuipageVue</code>。先加载 Vue，再加载本库：</p>
+  <div class="code">
+  <div class="code-head"><span class="file">index.html</span><button data-copy="">复制</button></div>
+  <div class="code-body"><pre>&lt;script src="https://unpkg.com/vue@3.4.34/dist/vue.global.prod.js"&gt;&lt;\/script&gt;
+&lt;script src="https://unpkg.com/@auipage/vue@latest/dist/auipage-vue.iife.js"&gt;&lt;\/script&gt;
+
+&lt;script&gt;
+    const { AuiRuntimeProvider, ChatContent, ThreadList } = AuipageVue;
+    Vue.createApp({ /* ... */ }).mount("#app");
+&lt;\/script&gt;</pre></div>
+</div>
+  <div class="note warn" style="margin-top:16px">
+    <b>顺序不能反。</b>Vue 必须先于本库加载。打包器环境（Vite / webpack）会处理依赖，不需要手动加载全局脚本。
+  </div>
+</div>
+</section>
+
+<section class="block">
+  <div class="block-head"><span class="idx">05</span><h2>本地跑起来</h2></div>
+  <div class="prose">
+  <p>仓库自带 playground 与 mock 服务，<code>oipage-cli</code> 同时起 mock（30000）与 vite（20000）：</p>
+  <div class="code">
+  <div class="code-head"><span class="file">terminal</span><button data-copy="">复制</button></div>
+  <div class="code-body"><pre>npm run dev
+# http://localhost:20000/</pre></div>
+</div>
+  <p style="margin-top:14px">mock 里预置了会话与历史消息，切换会话能看到渲染；发送消息默认接本地 ollama。</p>
+</div>
+</section>
+
+<nav class="pager">
+<a href="{{base}}index.html"><span class="dir">← 上一页</span><span class="name">概览</span></a>
+<a class="next" href="{{base}}guide/adapter.html"><span class="dir">下一页 →</span><span class="name">适配器</span></a>
+  </nav>

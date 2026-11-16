@@ -1,133 +1,74 @@
-# [@auipage/vue](https://github.com/handless-ui/auipage-vue)
-Vue版本的智能体UI组件库
+# @auipage/vue
 
-<p>
-    <a href="https://zxl20070701.github.io/toolbox/#/npm-download?packages=@auipage/vue&interval=7">
-        <img src="https://img.shields.io/npm/dm/@auipage/vue.svg" alt="downloads">
-    </a>
-    <a href="https://www.npmjs.com/package/@auipage/vue">
-        <img src="https://img.shields.io/npm/v/@auipage/vue.svg" alt="npm">
-    </a>
-    <a href="https://github.com/handless-ui/auipage-vue/issues">
-        <img src="https://img.shields.io/github/issues/handless-ui/auipage-vue" alt="issue">
-    </a>
-    <a href="https://github.com/handless-ui/auipage-vue" target='_blank'>
-        <img alt="GitHub repo stars" src="https://img.shields.io/github/stars/handless-ui/auipage-vue?style=social">
-    </a>
-    <a href="https://github.com/handless-ui/auipage-vue">
-        <img src="https://img.shields.io/github/forks/handless-ui/auipage-vue" alt="forks">
-    </a>
-     <a href="https://gitee.com/handless-ui/auipage-vue" target='_blank'>
-        <img alt="Gitee repo stars" src="https://gitee.com/handless-ui/auipage-vue/badge/star.svg">
-    </a>
-    <a href="https://gitee.com/handless-ui/auipage-vue">
-        <img src="https://gitee.com/handless-ui/auipage-vue/badge/fork.svg" alt="forks">
-    </a>
-</p>
+> 智能体页面的 Vue 3 **无头（Headless）组件库**：消息流、会话列表、输入框的状态与交互归库，样式全部归你。
 
-<img src="https://nodei.co/npm/@auipage/vue.png?downloads=true&amp;downloadRank=true&amp;stars=true" alt="NPM">
+[![npm](https://img.shields.io/npm/v/@auipage/vue.svg)](https://www.npmjs.com/package/@auipage/vue)
+[![license](https://img.shields.io/npm/l/@auipage/vue.svg)](https://github.com/handless-ui/auipage-vue/blob/main/LICENSE)
+[![downloads](https://img.shields.io/npm/dm/@auipage/vue.svg)](https://www.npmjs.com/package/@auipage/vue)
 
-## 如何使用？
+![workbench](./docs/assets/img/workbench.png)
 
-> 本库是 **Headless（无头）** 组件库：只负责状态与逻辑，不附带任何样式，界面长什么样完全由你决定。
+上图是文档站的在线 workbench：会话列表、消息流、输入区全部由本库组件 + 一份普通 CSS 渲染，
+消息是真实逐字流式输出（`dist/auipage-vue.iife.js` + 内存适配器）。
 
-### 1. 安装
+## 它是什么
+
+做智能体页面，难的不是气泡样式，而是这些：流式片段怎么拼、会话怎么切、工具调用怎么从「运行中」走到「结果」、
+换一个模型后端要不要改界面。`@auipage/vue` 把这些做成状态机，把样式全部留空。
+
+| 取向 | 说明 |
+| --- | --- |
+| **Headless** | 组件渲染固定标签，挂稳定的 `aui-*` class 与 `data-*` 属性，**不带任何 CSS**。 |
+| **Slot** | 遍历交给作用域插槽：`Messages` 给 `{ message }`、`Parts` 给 `{ part }`，模板自己判类型渲染。 |
+| **Adapter** | 三套适配器把 HTTP、SSE、WebSocket 挡在库外，换后端不动组件树。 |
+| **Vue 3** | 纯 `defineComponent` + `h` 实现，不依赖模板编译器；支持 `<script setup>` 与 TS。 |
+
+## 提供什么
+
+| 导出 | 渲染标签 | 说明 |
+| --- | --- | --- |
+| `AuiRuntimeProvider` | — | 装配 `AuiPage` 与状态，向下提供 context（`:adapter` / `:tools`） |
+| `ChatContent.Root` / `Viewport` | `div` | 根容器 / 滚动视口 |
+| `ChatContent.Messages` / `Parts` | `div` / `span` | 遍历消息 `{ message }` / 遍历片段 `{ part }` |
+| `ChatContent.Composer.Root` / `Input` / `Send` | `form` / `textarea` / `button` | 输入区三件 |
+| `ThreadList.Root` / `New` / `Items` / `Item.*` | `div` / `button` / `span` | 会话新建、切换、归档、删除 |
+| `ChatTransportAdapter` 等 | 类 | 三套适配器，从 `@auipage/core` 透出 |
+| `defineTool` | 函数 | 定义前端工具，`render` 是一个 Vue 组件 |
+| `generator` | 工具函数 | 把回调式流读取包成 `AsyncGenerator` |
+
+## 安装
 
 ```bash
 npm install @auipage/vue
 ```
 
-### 2. 实现适配器
+依赖 `vue ^3.4.34`、`@auipage/core ^0.1.0`，无需引入任何 CSS。
 
-组件库不关心你的后端用什么语言、模型用哪家，一切通过三个适配器对接。新建 `adapter.ts`（下面是一份零依赖、开箱即跑的内存示例）：
-
-```ts
-import {
-    ChatTransportAdapter,
-    MessageHistoryAdapter,
-    ThreadListAdapter,
-} from "@auipage/vue";
-
-// —— 演示用内存存储，实际项目替换成你的后端接口即可 ——
-const historyDB: Record<string, any[]> = {};
-let threads: any[] = [];
-
-// ① 对话传输：对接大模型，这里用本地“复读”模拟流式回复
-const ChatTransport = new ChatTransportAdapter({
-    async *run({ messages }) {
-        yield { type: "loading", text: "思考中..." };
-
-        const question =
-            messages[0]?.content.find((p: any) => p.type === "text")?.text ?? "";
-
-        for (const char of `收到：${question}`) {
-            yield { type: "text", text: char };
-        }
-    },
-});
-
-// ② 历史消息：加载 / 入库
-const MessageHistory = new MessageHistoryAdapter({
-    async load(threadId) {
-        return historyDB[threadId] ?? [];
-    },
-    async append(threadId, group) {
-        (historyDB[threadId] ??= []).push(group);
-    },
-});
-
-// ③ 会话列表：查询 / 新建 / 归档 / 删除
-const ThreadList = new ThreadListAdapter({
-    async list() {
-        return threads;
-    },
-    async new(group) {
-        const title =
-            group.messages[0]?.content.find((p: any) => p.type === "text")
-                ?.text ?? "新会话";
-        const thread = {
-            threadId: `${Date.now()}`,
-            title: title.slice(0, 20),
-            status: "regular",
-        };
-        threads.unshift(thread);
-        return thread;
-    },
-    async archive(threadId) {
-        threads = threads.map((t) =>
-            t.threadId === threadId ? { ...t, status: "archived" } : t
-        );
-    },
-    async unarchive(threadId) {
-        threads = threads.map((t) =>
-            t.threadId === threadId ? { ...t, status: "regular" } : t
-        );
-    },
-    async delete(threadId) {
-        threads = threads.filter((t) => t.threadId !== threadId);
-    },
-});
-
-export default { ChatTransport, MessageHistory, ThreadList };
-```
-
-### 3. 组装页面
-
-用 `AuiRuntimeProvider` 把适配器注入应用，再像搭积木一样组合 `ChatContent` 下的子组件：
+## 最小接入
 
 ```vue
-<!-- App.vue -->
 <template>
-    <AuiRuntimeProvider :adapter="adapter">
+    <AuiRuntimeProvider :adapter="adapter" :tools="tools">
+        <ThreadList.Root>
+            <ThreadList.New>新建会话</ThreadList.New>
+            <ThreadList.Items v-slot="{ thread }">
+                <ThreadList.Item.Root>
+                    <ThreadList.Item.Trigger>
+                        <ThreadList.Item.Title />
+                    </ThreadList.Item.Trigger>
+                </ThreadList.Item.Root>
+            </ThreadList.Items>
+        </ThreadList.Root>
+
         <ChatContent.Root>
             <ChatContent.Viewport>
                 <ChatContent.Messages v-slot>
                     <ChatContent.Parts v-slot="{ part }">
                         <p v-if="part.type === 'text'">{{ part.text }}</p>
+                        <p v-else-if="part.type === 'thinking'" class="think">{{ part.text }}</p>
                     </ChatContent.Parts>
                 </ChatContent.Messages>
             </ChatContent.Viewport>
-
             <ChatContent.Composer.Root>
                 <ChatContent.Composer.Input />
                 <ChatContent.Composer.Send>发送</ChatContent.Composer.Send>
@@ -135,23 +76,42 @@ export default { ChatTransport, MessageHistory, ThreadList };
         </ChatContent.Root>
     </AuiRuntimeProvider>
 </template>
+```
 
-<script setup lang="ts">
-import { AuiRuntimeProvider, ChatContent } from "@auipage/vue";
-import adapter from "./adapter";
+```ts
+// adapter.ts —— 三个实例，key 名固定
+import { ChatTransportAdapter, MessageHistoryAdapter, ThreadListAdapter } from "@auipage/vue";
+
+export default {
+    ChatTransport: new ChatTransportAdapter({
+        async *run({ messages, context }) {
+            yield { type: "text", text: "你好。" };
+        },
+        response(name, data) { /* 工具结果回传 */ },
+    }),
+    MessageHistory: new MessageHistoryAdapter({
+        async load(threadId) { /* 历史消息组 */ },
+        async append(threadId, group) { /* 落库 */ },
+    }),
+    ThreadList: new ThreadListAdapter({
+        async list() { /* 会话列表 */ },
+        async new(firstGroup) { /* 建会话 */ },
+        async archive(id) { }, async unarchive(id) { }, async delete(id) { },
+    }),
+};
+```
+
+## 不打包，直接引用
+
+```html
+<script src="https://unpkg.com/vue@3.4.34/dist/vue.global.prod.js"></script>
+<script src="https://unpkg.com/@auipage/vue@latest/dist/auipage-vue.iife.js"></script>
+<script>
+    const { AuiRuntimeProvider, ChatContent, ThreadList } = AuipageVue;
 </script>
 ```
 
-启动后输入消息，即可看到流式回复。需要多会话管理时，再按同样的方式引入 `ThreadList` 组件即可。
-
-### 进阶文档
-
-简单例子只覆盖了主干流程，更多细节分章节说明：
-
-- [适配器（Adapter）](./docs/adapter.md)：对接真实后端、SSE 流式输出、`generator` 与工具结果回传
-- [聊天视图 ChatContent](./docs/chat-content.md)：消息片段类型、自定义渲染、输入区定制
-- [会话列表 ThreadList](./docs/thread-list.md)：新建、归档、取消归档与删除
-- [前端工具 defineTool](./docs/tools.md)：注册前端工具及带交互的 `render` 组件
+IIFE 构建通过全局 `Vue` 使用 Vue，因此要先加载 Vue，再加载本库。打包器环境会处理依赖，不需要手动加载全局脚本。
 
 ## 版权
 

@@ -1,0 +1,143 @@
+<!--meta {"title": "适配器 · @auipage/vue 文档", "desc": "ChatTransport、MessageHistory、ThreadList 三套适配器与片段数据形态。", "section": "guide", "demos": false}-->
+<div class="pagehead"><span class="ph-deco" aria-hidden="true"></span><div class="crumbs"><a href="{{base}}index.html">文档</a><span class="sep">/</span><span>概念</span><span class="sep">/</span><span>适配器</span></div>
+<h1><em>Concept 02</em>适配器</h1>
+<p class="lede">组件库不发任何网络请求，也不绑定模型。三个适配器是它与你的后端之间唯一的接缝：你实现接口，它在合适的时机调用。</p>
+<div class="badges"><span class="badge">ChatTransportAdapter</span><span class="badge">MessageHistoryAdapter</span><span class="badge">ThreadListAdapter</span></div></div>
+
+<section class="block">
+  <div class="block-head"><span class="idx">01</span><h2>总览</h2></div>
+  <div class="prose">
+  <div class="table-wrap"><table class="spec">
+  <thead><tr><th>适配器</th><th>职责</th><th>需要实现</th></tr></thead>
+  <tbody><tr><td><code>ChatTransportAdapter</code></td><td>发起一轮对话，流式产出片段</td><td><code>run</code> / <code>response</code></td></tr><tr><td><code>MessageHistoryAdapter</code></td><td>历史消息的加载与入库</td><td><code>load</code> / <code>append</code></td></tr><tr><td><code>ThreadListAdapter</code></td><td>会话列表的增删改查</td><td><code>list</code> / <code>new</code> / <code>archive</code> / <code>unarchive</code> / <code>delete</code></td></tr></tbody>
+</table></div>
+  <p style="margin-top:14px">三个实例装进一个对象，<b>key 名固定</b>：</p>
+  <div class="code">
+  <div class="code-head"><span class="file">adapter.ts</span><button data-copy="">复制</button></div>
+  <div class="code-body"><pre>export default { ChatTransport, MessageHistory, ThreadList };</pre></div>
+</div>
+</div>
+</section>
+
+<section class="block">
+  <div class="block-head"><span class="idx">02</span><h2>ChatTransport：流式对话</h2></div>
+  <div class="prose">
+  <div class="code">
+  <div class="code-head"><span class="file">chatTransport.ts</span><button data-copy="">复制</button></div>
+  <div class="code-body"><pre>new ChatTransportAdapter({
+    async *run({ messages, context }) {
+<span class="c">        // messages        本轮新发送的消息</span>
+<span class="c">        // context.history 已入库的历史消息组</span>
+<span class="c">        // context.tools   注册的前端工具描述</span>
+    },
+    response(name, data) { /* 工具结果回传 */ },
+});</pre></div>
+</div>
+  <div class="table-wrap"><table class="spec">
+  <thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead>
+  <tbody><tr><td><code>run</code></td><td><code>(params) =&gt; AsyncGenerator&lt;ContentPart&gt;</code></td><td>逐个 <code>yield</code> 片段；返回假值时本轮直接结束。</td></tr><tr><td><code>response</code></td><td><code>(name, data) =&gt; unknown</code></td><td>反向通道，用于 <code>response("tool-result", { id, status, result })</code>。</td></tr></tbody>
+</table></div>
+  <p style="margin-top:16px">回调式流读（fetch / WebSocket）用 <code>generator</code> 包一层即可：</p>
+  <div class="code">
+  <div class="code-head"><span class="file">chatTransport.ts</span><button data-copy="">复制</button></div>
+  <div class="code-body"><pre>import { ChatTransportAdapter, generator } from "@auipage/vue";
+import { fetch } from "@auipage/fetch";
+
+new ChatTransportAdapter({
+    async *run({ messages, context }) {
+        yield { type: "loading", text: "思考中..." };
+
+        yield* generator((push, end, error) =&gt; {
+            fetch({ url: "/api/chat", method: "POST", body: JSON.stringify({ messages, tools: context.tools }) })
+                .then(res =&gt; {
+                    res.on("data", chunk =&gt; push(JSON.parse(chunk)));
+                    res.on("end", end);
+                    res.on("error", error);
+                })
+                .catch(error);
+        });
+    },
+});</pre></div>
+</div>
+</div>
+</section>
+
+<section class="block">
+  <div class="block-head"><span class="idx">03</span><h2>MessageHistory：历史读写</h2></div>
+  <div class="prose">
+  <div class="code">
+  <div class="code-head"><span class="file">messageHistory.ts</span><button data-copy="">复制</button></div>
+  <div class="code-body"><pre>new MessageHistoryAdapter({
+    async load(threadId) { /* HistoryMessageGroup[] */ },
+    async append(threadId, group) { /* void */ },
+});</pre></div>
+</div>
+  <ul>
+    <li><code>load</code> 在切换会话时调用，返回假值时跳过历史加载。</li>
+    <li><code>append</code> 每轮结束写入一整组消息，与 <code>run</code> 收到的结构同构。</li>
+    <li><code>loading</code> 片段不用手动剔除，渲染历史时会自动过滤。</li>
+  </ul>
+</div>
+</section>
+
+<section class="block">
+  <div class="block-head"><span class="idx">04</span><h2>ThreadList：会话管理</h2></div>
+  <div class="prose">
+  <div class="code">
+  <div class="code-head"><span class="file">threadList.ts</span><button data-copy="">复制</button></div>
+  <div class="code-body"><pre>new ThreadListAdapter({
+    async list() {},                    // Thread[]
+    async new(firstGroup) {},           // Thread | void
+    async archive(threadId) {},
+    async unarchive(threadId) {},
+    async delete(threadId) {},
+});</pre></div>
+</div>
+  <div class="table-wrap"><table class="spec">
+  <thead><tr><th>方法</th><th>时机与行为</th></tr></thead>
+  <tbody><tr><td><code>list</code></td><td>Provider 挂载时调用一次。</td></tr><tr><td><code>new</code></td><td>新会话发送第一条消息时调用；返回假值会中止本轮后续流程。</td></tr><tr><td><code>archive</code></td><td>归档；归档的是当前会话时自动回到新建态。</td></tr><tr><td><code>unarchive</code></td><td>取消归档，不自动切换会话。</td></tr><tr><td><code>delete</code></td><td>删除；删的是当前会话时自动回到新建态。</td></tr></tbody>
+</table></div>
+  <p style="margin-top:16px">会话对象的最小约定：</p>
+  <div class="code">
+  <div class="code-head"><span class="file">types.ts</span><button data-copy="">复制</button></div>
+  <div class="code-body"><pre>interface ThreadListItem {
+    threadId: string;                 // 必填，列表 key 与操作都靠它
+    title: string;
+    status: "regular" | "archived";
+}</pre></div>
+</div>
+  <div class="note" style="margin-top:14px">
+    <b><code>threadId</code> 是列表的 key。</b>新会话会 unshift 到列表头部，没有稳定 key 时 Vue 按位置复用组件，会出现数据错位。
+  </div>
+</div>
+</section>
+
+<section class="block">
+  <div class="block-head"><span class="idx">05</span><h2>片段数据形态</h2></div>
+  <div class="prose">
+  <div class="code">
+  <div class="code-head"><span class="file">part</span><button data-copy="">复制</button></div>
+  <div class="code-body"><pre>{ type: "text",      text: "正文增量" }
+{ type: "thinking",   text: "思维链增量" }
+{ type: "loading",    text: "思考中..." }
+{
+    type: "tool-call",
+    id: "call-xxx",     // 稳定 key，phase 原地切换
+    name: "askFavoriteFruit",
+    args: {},
+    phase: "pending",   // pending → executing → result
+    status: "pending",  // pending / success / error
+    result: {}
+}</pre></div>
+</div>
+  <p style="margin-top:14px">文本类片段是<b>增量拼接</b>的：同 role 的连续片段并入同一条消息，
+  同类型的连续片段并入同一个 part 的 <code>text</code>，DOM 上是一段文字在变长，而不是不断新建节点。</p>
+  <p>业务也可以 <code>yield</code> 任意带 <code>type</code> 的对象，运行时会原样放进 <code>parts</code>，
+  由你的 <code>Parts</code> 插槽决定怎么渲染。</p>
+</div>
+</section>
+
+<nav class="pager">
+<a href="{{base}}guide/installation.html"><span class="dir">← 上一页</span><span class="name">安装与接入</span></a>
+<a class="next" href="{{base}}guide/components.html"><span class="dir">下一页 →</span><span class="name">组件 API</span></a>
+  </nav>

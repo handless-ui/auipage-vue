@@ -1,0 +1,100 @@
+<!--meta {"title": "组件 API · @auipage/vue 文档", "desc": "AuiRuntimeProvider、ChatContent、ThreadList 的组件树、作用域插槽与样式钩子。", "section": "guide", "demos": false}-->
+<div class="pagehead"><span class="ph-deco" aria-hidden="true"></span><div class="crumbs"><a href="{{base}}index.html">文档</a><span class="sep">/</span><span>概念</span><span class="sep">/</span><span>组件 API</span></div>
+<h1><em>Concept 03</em>组件 API</h1>
+<p class="lede">两套组件树加一个 Provider。每个组件渲染固定标签、固定 class 与 data 属性，遍历交给作用域插槽。</p>
+<div class="badges"><span class="badge">v-slot</span><span class="badge">ChatContent</span><span class="badge">ThreadList</span></div></div>
+
+<section class="block">
+  <div class="block-head"><span class="idx">01</span><h2>AuiRuntimeProvider</h2></div>
+  <div class="prose">
+  <div class="code">
+  <div class="code-head"><span class="file">App.vue</span><button data-copy="">复制</button></div>
+  <div class="code-body"><pre>&lt;AuiRuntimeProvider :adapter="adapter" :tools="tools"&gt;
+<span class="c">    &lt;!-- 子树 --&gt;</span>
+&lt;/AuiRuntimeProvider&gt;</pre></div>
+</div>
+  <div class="table-wrap"><table class="spec">
+  <thead><tr><th>属性</th><th>类型</th><th>必填</th><th>说明</th></tr></thead>
+  <tbody><tr><td><code>adapter</code></td><td><code>{ ChatTransport, MessageHistory, ThreadList }</code></td><td>是</td><td>三套适配器实例。</td></tr><tr><td><code>tools</code></td><td><code>Tool[]</code></td><td>否</td><td>前端工具列表，见 <a href="./tools.html">前端工具</a>。</td></tr></tbody>
+</table></div>
+  <p style="margin-top:14px">Provider 只装配一次，不同 Provider 各有独立 store 与 <code>AuiPage</code>，可并排两个互不干扰。</p>
+</div>
+</section>
+
+<section class="block">
+  <div class="block-head"><span class="idx">02</span><h2>ChatContent 组件树</h2></div>
+  <div class="prose">
+  <div class="code">
+  <div class="code-head"><span class="file">tree</span><button data-copy="">复制</button></div>
+  <div class="code-body"><pre>ChatContent.Root                div    聊天区域根容器
+├── ChatContent.Viewport         div    滚动视口（自动滚到底）
+│   └── ChatContent.Messages     div    遍历消息，v-slot="{ message }"
+│       └── ChatContent.Parts    span   遍历片段，v-slot="{ part }"
+└── ChatContent.Composer.Root    form   输入区（阻止默认提交）
+    ├── ChatContent.Composer.Input  textarea
+    └── ChatContent.Composer.Send   button</pre></div>
+</div>
+  <div class="table-wrap"><table class="spec">
+  <thead><tr><th>组件</th><th>要点</th></tr></thead>
+  <tbody><tr><td><code>Messages</code></td><td>对 <code>store.messages</code> 逐条渲染，插槽作用域 <code>{ message }</code>。</td></tr><tr><td><code>Parts</code></td><td>对当前消息的 <code>parts</code> 逐个渲染，作用域 <code>{ part }</code>；渲染为 <code>span</code>，方便内联拼装。</td></tr><tr><td><code>Viewport</code></td><td>只在内容溢出时滚到底，不会打断用户上滑。</td></tr><tr><td><code>Composer.Input</code></td><td>受控 textarea，支持 <code>Cmd/Ctrl + Enter</code> 发送。</td></tr><tr><td><code>Composer.Send</code></td><td>执行中自动 <code>disabled</code>。</td></tr><tr><td><code>Composer.Root</code></td><td>渲染 <code>form</code>，自动阻止默认提交。</td></tr></tbody>
+</table></div>
+  <p style="margin-top:16px">两层插槽把"消息"和"片段"的遍历都替你做完了，模板里只需要判类型：</p>
+  <div class="code">
+  <div class="code-head"><span class="file">Messages.vue</span><button data-copy="">复制</button></div>
+  <div class="code-body"><pre>&lt;ChatContent.Messages v-slot="{ message }"&gt;
+    &lt;div :data-role="message.role"&gt;
+        &lt;ChatContent.Parts v-slot="{ part }"&gt;
+            &lt;p v-if="part.type === 'text'"&gt;{{#raw}}{{ part.text }}{{/raw}}&lt;/p&gt;
+            &lt;p v-else-if="part.type === 'loading'" class="hint"&gt;{{#raw}}{{ part.text }}{{/raw}}&lt;/p&gt;
+            &lt;details v-else-if="part.type === 'thinking'"&gt;
+                &lt;summary&gt;思考过程&lt;/summary&gt;&lt;p&gt;{{#raw}}{{ part.text }}{{/raw}}&lt;/p&gt;
+            &lt;/details&gt;
+            &lt;ToolCallCard v-else-if="part.type === 'tool-call'" :part="part" /&gt;
+        &lt;/ChatContent.Parts&gt;
+    &lt;/div&gt;
+&lt;/ChatContent.Messages&gt;</pre></div>
+</div>
+  <div class="note" style="margin-top:14px">
+    <b>先收窄再访问。</b><code>tool-call</code> 分支没有 <code>text</code> 字段，
+    直接写 <code>part.text</code> 会在工具调用时拿到 undefined。
+  </div>
+</div>
+</section>
+
+<section class="block">
+  <div class="block-head"><span class="idx">03</span><h2>ThreadList 组件树</h2></div>
+  <div class="prose">
+  <div class="code">
+  <div class="code-head"><span class="file">tree</span><button data-copy="">复制</button></div>
+  <div class="code-body"><pre>ThreadList.Root                 div     列表根容器
+├── ThreadList.New              button  新建会话
+└── ThreadList.Items            div     遍历会话，v-slot="{ thread }"
+    └── ThreadList.Item.Root     div     单条容器（带 data-status / data-active）
+        ├── ThreadList.Item.Trigger  button  切换会话（归档态不可点）
+        │   └── ThreadList.Item.Title span   会话标题
+        ├── ThreadList.Item.Archive  button
+        ├── ThreadList.Item.UnArchive button
+        └── ThreadList.Item.Delete   button</pre></div>
+</div>
+  <div class="table-wrap"><table class="spec">
+  <thead><tr><th>组件</th><th>要点</th></tr></thead>
+  <tbody><tr><td><code>Item.Root</code></td><td><code>data-status="regular|archived"</code>；激活时出现 <code>data-active</code>（无值）。</td></tr><tr><td><code>Item.Trigger</code></td><td>归档会话不会被激活，需先取消归档。</td></tr><tr><td><code>Item.Title</code></td><td>渲染 <code>thread.title</code>，缺省回退「新会话」；也可以传插槽内容自定义。</td></tr><tr><td><code>Archive</code></td><td>归档当前会话时，界面自动进入新建会话状态。</td></tr><tr><td><code>UnArchive</code></td><td>恢复为 regular，<b>不会</b>自动切换进该会话。</td></tr><tr><td><code>Delete</code></td><td>删当前会话时自动进入新建会话状态。</td></tr></tbody>
+</table></div>
+</div>
+</section>
+
+<section class="block">
+  <div class="block-head"><span class="idx">04</span><h2>样式钩子</h2></div>
+  <div class="prose">
+  <div class="table-wrap"><table class="spec">
+  <thead><tr><th>节点</th><th>class</th><th>data 属性</th></tr></thead>
+  <tbody><tr><td>ChatContent.Root</td><td><code>aui-chat-content-root</code></td><td>—</td></tr><tr><td>Viewport / Messages / Parts</td><td><code>-viewport</code> / <code>-messages</code> / <code>-parts</code></td><td><code>Messages</code> 外层带 <code>data-role</code></td></tr><tr><td>Composer 三件</td><td><code>aui-composer-root</code> / <code>-input</code> / <code>-send</code></td><td>Send 执行中带 <code>data-disabled</code></td></tr><tr><td>ThreadList 树</td><td><code>aui-thread-list-root</code> / <code>-new</code> / <code>-items</code></td><td>—</td></tr><tr><td>Item 系列</td><td><code>aui-item-root</code> / <code>-trigger</code> / <code>-title</code> / <code>-archive</code> / <code>-unarchive</code> / <code>-delete</code></td><td><code>data-status</code> / <code>data-active</code></td></tr></tbody>
+</table></div>
+  <p style="margin-top:14px">整份 class 名以 <code>aui-</code> 打头，不会与任何设计系统的命名冲突。</p>
+</div>
+</section>
+
+<nav class="pager">
+<a href="{{base}}guide/adapter.html"><span class="dir">← 上一页</span><span class="name">适配器</span></a>
+<a class="next" href="{{base}}guide/tools.html"><span class="dir">下一页 →</span><span class="name">前端工具</span></a>
+  </nav>

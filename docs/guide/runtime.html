@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<!-- 本文件由 apis 生成，请勿直接编辑；改 apis 里的页面、模板或 site.json 后运行 npm run docs 重新生成。 -->
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>数据流与状态 · @auipage/vue 文档</title>
+<link rel="icon" href="../assets/img/logo.png">
+<meta name="description" content="AuiPage、store 与 runtime 的分层，以及一次消息发送的完整链路。">
+<link rel="stylesheet" href="../assets/css/docs.css?v=bc528867">
+</head>
+<body>
+<a class="skip" href="#main">跳到正文</a>
+<aside class="rail">
+    <a class="rail-brand" href="../index.html" aria-label="@auipage/vue 文档首页">
+      <img class="rail-mark" src="../assets/img/logo.png" alt="@auipage/vue" width="36" height="36">
+    </a>
+    <nav class="rail-nav" aria-label="主导航">
+      <a href="../index.html" class=""><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="2.5" width="6" height="6" rx="1"/><rect x="11.5" y="2.5" width="6" height="6" rx="1"/><rect x="2.5" y="11.5" width="6" height="6" rx="1"/><rect x="11.5" y="11.5" width="6" height="6" rx="1"/></svg><em>概览</em></a>
+      <a href="../guide/installation.html" class=""><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 3v3M13 3v3M5 6h10v3a5 5 0 0 1-10 0z"/><path d="M10 14v3"/></svg><em>接入</em></a>
+      <a href="../guide/adapter.html" class="on"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3 3 7l7 4 7-4z"/><path d="M3 11l7 4 7-4"/><path d="M3 15l7 4 7-4"/></svg><em>概念</em></a>
+      <a href="../guide/changelog.html" class=""><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 3h10v14H5z"/><path d="M8 7h4M8 10h4M8 13h2"/></svg><em>日志</em></a>
+    </nav>
+    <div class="rail-foot">
+      <a class="rail-gh" href="https://github.com/handless-ui/auipage-vue" target="_blank" rel="noopener" title="GitHub 仓库"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 4 3 10l4 6M13 4l4 6-4 6"/></svg></a>
+      <span class="rail-ver">v0.1.0</span>
+    </div>
+  </aside>
+
+<div class="mobiletop">
+    <a class="m-brand" href="../index.html"><img class="rail-mark" src="../assets/img/logo.png" alt="@auipage/vue" width="36" height="36"><span class="m-name">@auipage/vue</span></a>
+    <button class="m-burger" type="button" data-drawer="open" aria-controls="drawer" aria-expanded="false" aria-label="打开导航">
+      <i></i><i></i><i></i>
+    </button>
+  </div>
+<div class="scrim" data-drawer="close" hidden></div>
+  <div class="drawer" id="drawer" aria-hidden="true" hidden>
+    <div class="drawer-rail">
+      <button class="drawer-close" type="button" data-drawer="close" aria-label="关闭导航"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6l-12 12"/></svg></button>
+      <a class="rail-brand" href="../index.html"><img class="rail-mark" src="../assets/img/logo.png" alt="@auipage/vue" width="36" height="36"></a>
+      <nav class="rail-nav" aria-label="主导航">
+      <a href="../index.html" class=""><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="2.5" width="6" height="6" rx="1"/><rect x="11.5" y="2.5" width="6" height="6" rx="1"/><rect x="2.5" y="11.5" width="6" height="6" rx="1"/><rect x="11.5" y="11.5" width="6" height="6" rx="1"/></svg><em>概览</em></a>
+      <a href="../guide/installation.html" class=""><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 3v3M13 3v3M5 6h10v3a5 5 0 0 1-10 0z"/><path d="M10 14v3"/></svg><em>接入</em></a>
+      <a href="../guide/adapter.html" class="on"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3 3 7l7 4 7-4z"/><path d="M3 11l7 4 7-4"/><path d="M3 15l7 4 7-4"/></svg><em>概念</em></a>
+      <a href="../guide/changelog.html" class=""><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 3h10v14H5z"/><path d="M8 7h4M8 10h4M8 13h2"/></svg><em>日志</em></a>
+    </nav>
+    </div>
+    <div class="drawer-tree">
+      <div class="drawer-tree-title">文档目录</div>
+      <aside class="tree">
+    <div class="group">开始</div><a href="../index.html" class=""><span class="n">00</span>概览</a><a href="../guide/installation.html" class=""><span class="n">01</span>安装与接入</a>
+    <div class="group">概念</div><a href="../guide/adapter.html" class=""><span class="n">02</span>适配器</a><a href="../guide/components.html" class=""><span class="n">03</span>组件 API</a><a href="../guide/tools.html" class=""><span class="n">04</span>前端工具</a><a href="../guide/runtime.html" class="on"><span class="n">05</span>数据流与状态</a>
+    <div class="group">参考</div><a href="../guide/changelog.html" class=""><span class="n">06</span>更新日志</a>
+  </aside>
+    </div>
+  </div>
+
+<div class="stage">
+<div class="shell">
+<aside class="tree">
+    <div class="group">开始</div><a href="../index.html" class=""><span class="n">00</span>概览</a><a href="../guide/installation.html" class=""><span class="n">01</span>安装与接入</a>
+    <div class="group">概念</div><a href="../guide/adapter.html" class=""><span class="n">02</span>适配器</a><a href="../guide/components.html" class=""><span class="n">03</span>组件 API</a><a href="../guide/tools.html" class=""><span class="n">04</span>前端工具</a><a href="../guide/runtime.html" class="on"><span class="n">05</span>数据流与状态</a>
+    <div class="group">参考</div><a href="../guide/changelog.html" class=""><span class="n">06</span>更新日志</a>
+  </aside>
+
+
+<main class="article">
+<div class="pagehead"><span class="ph-deco" aria-hidden="true"></span><div class="crumbs"><a href="../index.html">文档</a><span class="sep">/</span><span>概念</span><span class="sep">/</span><span>数据流与状态</span></div>
+<h1><em>Concept 05</em>数据流与状态</h1>
+<p class="lede">core 只管流程，runtime 把命令式回调翻成状态更新，Vue 组件订阅 store 渲染。三层分工，互不知道对方的实现细节。</p>
+<div class="badges"><span class="badge">AuiPage</span><span class="badge">store</span><span class="badge">runtime</span></div></div>
+
+<section class="block">
+  <div class="block-head"><span class="idx">01</span><h2>四层结构</h2></div>
+  <div class="prose">
+  <div class="code">
+  <div class="code-head"><span class="file">layers</span><button data-copy="">复制</button></div>
+  <div class="code-body"><pre>Vue 组件层          ChatContent.* / ThreadList.*
+      ▲ 订阅 store           │ 调 aui.* 触发动作
+      │                      ▼
+状态层             store（messages / threads / isExecuting ...）
+      ▲ setState             │
+      │                      ▼
+运行时层           makeChatContentRuntime / makeThreadListRuntime
+      ▲ 命令式回调           │
+      │                      ▼
+编排器层           AuiPage（@auipage/core）</pre></div>
+</div>
+  <p style="margin-top:14px">Vue 版没有引入额外状态库：runtime 直接维护一份可响应的状态对象，
+  组件用 <code>computed</code> / 渲染副作用订阅它。</p>
+</div>
+</section>
+
+<section class="block">
+  <div class="block-head"><span class="idx">02</span><h2>状态形态</h2></div>
+  <div class="prose">
+  <div class="code">
+  <div class="code-head"><span class="file">store.ts</span><button data-copy="">复制</button></div>
+  <div class="code-body"><pre>interface AuiState {
+    messages: ChatMessage[];             // 当前会话消息
+    threads: ThreadListItem[];           // 会话列表
+    activeThreadId: string | undefined;  // undefined 表示新建会话
+    isExecuting: boolean;
+    composerValue: string;
+}</pre></div>
+</div>
+</div>
+</section>
+
+<section class="block">
+  <div class="block-head"><span class="idx">03</span><h2>append 的翻译规则</h2></div>
+  <div class="prose">
+  <ul>
+    <li><b>text / loading / thinking</b>：并入最后一条<b>同 role</b> 消息的 parts（不存在则新建），
+      并返回一个增量函数，后续片段直接往 <code>text</code> 上拼。</li>
+    <li><b>tool-call</b>：先建 <code>pending</code> part（稳定 <code>id</code>），返回结束回调；
+      再按有无 <code>render</code> 走 <code>executing</code> 或直接 <code>result</code>。</li>
+    <li><b>其它 type</b>：原样追加。</li>
+  </ul>
+  <div class="note" style="margin-top:14px">
+    <b>同 role 合并是硬约束。</b>实时态与历史回读因此结构一致，同一套模板能吃两种态。
+  </div>
+</div>
+</section>
+
+<section class="block">
+  <div class="block-head"><span class="idx">04</span><h2>一次发送的链路</h2></div>
+  <div class="prose">
+  <ol>
+    <li>输入框或发送按钮触发 <code>sendMessage(aui, state)</code>。</li>
+    <li>trim 为空或 <code>isExecuting</code> 为真时直接 return；否则清空输入、置执行中。</li>
+    <li><code>AuiPage.sendMessage</code>：append 用户消息 → <code>ThreadList.new</code>（新会话时）→
+      <code>MessageHistory.append</code> → 调 <code>ChatTransport.run</code>。</li>
+    <li>core 消费 generator：文本增量拼接、tool-call 建 part、终态按 render 分支。</li>
+    <li>generator 结束，Promise resolve，执行中复位，发送按钮恢复。</li>
+  </ol>
+  <p style="margin-top:12px"><code>Viewport</code> 订阅消息数量与片段文本总长度，所以流式增量也会触发滚到底。</p>
+</div>
+</section>
+
+<section class="block">
+  <div class="block-head"><span class="idx">05</span><h2>多实例与错误</h2></div>
+  <div class="prose">
+  <ul>
+    <li><b>隔离</b>：不同 Provider 各有独立 store 与 AuiPage，同一页面可以并排多套（多账号多窗口）。</li>
+    <li><b>重复发送</b>：<code>sendMessage</code> 内部 catch core 的 reject，只 <code>console.error</code>。</li>
+    <li><b>上下文缺失</b>：组件在 Provider 之外使用会抛错并给出修复提示。</li>
+  </ul>
+</div>
+</section>
+
+<nav class="pager">
+<a href="../guide/tools.html"><span class="dir">← 上一页</span><span class="name">前端工具</span></a>
+<a class="next" href="../guide/changelog.html"><span class="dir">下一页 →</span><span class="name">更新日志</span></a>
+  </nav>
+</main>
+
+</div>
+</div>
+<footer class="foot">
+    <div class="foot-inner">
+      <div class="col">
+        <h4>开始</h4>
+        <a href="../index.html">概览</a>
+        <a href="../guide/installation.html">安装与接入</a>
+        <a href="../guide/changelog.html">更新日志</a>
+      </div>
+      <div class="col">
+        <h4>概念</h4>
+        <a href="../guide/adapter.html">适配器</a>
+        <a href="../guide/components.html">组件 API</a>
+        <a href="../guide/tools.html">前端工具</a>
+        <a href="../guide/runtime.html">数据流与状态</a>
+      </div>
+      <div class="col">
+        <h4>资源</h4>
+        <a href="https://github.com/handless-ui/auipage-vue" target="_blank" rel="noopener">GitHub 仓库</a>
+        <a href="https://www.npmjs.com/package/@auipage/vue" target="_blank" rel="noopener">npm 包</a>
+        <a href="https://github.com/handless-ui/auipage" target="_blank" rel="noopener">auipage 框架</a>
+      </div>
+      <div class="sign">
+        <b>@auipage/vue</b> — 智能体的 Vue 无头组件库<br>
+        MIT License · Copyright (c) <a href="https://zxl20070701.github.io/notebook/home.html" target="_blank" rel="noopener">zxl20070701</a>
+      </div>
+    </div>
+  </footer>
+
+<script src="../assets/js/docs.js?v=bc528867"></script>
+
+
+</body>
+</html>

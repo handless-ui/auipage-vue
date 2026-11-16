@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<!-- 本文件由 apis 生成，请勿直接编辑；改 apis 里的页面、模板或 site.json 后运行 npm run docs 重新生成。 -->
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>前端工具 · @auipage/vue 文档</title>
+<link rel="icon" href="../assets/img/logo.png">
+<meta name="description" content="defineTool、ToolRenderProps、tool-call 生命周期与历史回读。">
+<link rel="stylesheet" href="../assets/css/docs.css?v=bc528867">
+</head>
+<body>
+<a class="skip" href="#main">跳到正文</a>
+<aside class="rail">
+    <a class="rail-brand" href="../index.html" aria-label="@auipage/vue 文档首页">
+      <img class="rail-mark" src="../assets/img/logo.png" alt="@auipage/vue" width="36" height="36">
+    </a>
+    <nav class="rail-nav" aria-label="主导航">
+      <a href="../index.html" class=""><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="2.5" width="6" height="6" rx="1"/><rect x="11.5" y="2.5" width="6" height="6" rx="1"/><rect x="2.5" y="11.5" width="6" height="6" rx="1"/><rect x="11.5" y="11.5" width="6" height="6" rx="1"/></svg><em>概览</em></a>
+      <a href="../guide/installation.html" class=""><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 3v3M13 3v3M5 6h10v3a5 5 0 0 1-10 0z"/><path d="M10 14v3"/></svg><em>接入</em></a>
+      <a href="../guide/adapter.html" class="on"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3 3 7l7 4 7-4z"/><path d="M3 11l7 4 7-4"/><path d="M3 15l7 4 7-4"/></svg><em>概念</em></a>
+      <a href="../guide/changelog.html" class=""><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 3h10v14H5z"/><path d="M8 7h4M8 10h4M8 13h2"/></svg><em>日志</em></a>
+    </nav>
+    <div class="rail-foot">
+      <a class="rail-gh" href="https://github.com/handless-ui/auipage-vue" target="_blank" rel="noopener" title="GitHub 仓库"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 4 3 10l4 6M13 4l4 6-4 6"/></svg></a>
+      <span class="rail-ver">v0.1.0</span>
+    </div>
+  </aside>
+
+<div class="mobiletop">
+    <a class="m-brand" href="../index.html"><img class="rail-mark" src="../assets/img/logo.png" alt="@auipage/vue" width="36" height="36"><span class="m-name">@auipage/vue</span></a>
+    <button class="m-burger" type="button" data-drawer="open" aria-controls="drawer" aria-expanded="false" aria-label="打开导航">
+      <i></i><i></i><i></i>
+    </button>
+  </div>
+<div class="scrim" data-drawer="close" hidden></div>
+  <div class="drawer" id="drawer" aria-hidden="true" hidden>
+    <div class="drawer-rail">
+      <button class="drawer-close" type="button" data-drawer="close" aria-label="关闭导航"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6l-12 12"/></svg></button>
+      <a class="rail-brand" href="../index.html"><img class="rail-mark" src="../assets/img/logo.png" alt="@auipage/vue" width="36" height="36"></a>
+      <nav class="rail-nav" aria-label="主导航">
+      <a href="../index.html" class=""><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="2.5" width="6" height="6" rx="1"/><rect x="11.5" y="2.5" width="6" height="6" rx="1"/><rect x="2.5" y="11.5" width="6" height="6" rx="1"/><rect x="11.5" y="11.5" width="6" height="6" rx="1"/></svg><em>概览</em></a>
+      <a href="../guide/installation.html" class=""><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 3v3M13 3v3M5 6h10v3a5 5 0 0 1-10 0z"/><path d="M10 14v3"/></svg><em>接入</em></a>
+      <a href="../guide/adapter.html" class="on"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3 3 7l7 4 7-4z"/><path d="M3 11l7 4 7-4"/><path d="M3 15l7 4 7-4"/></svg><em>概念</em></a>
+      <a href="../guide/changelog.html" class=""><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 3h10v14H5z"/><path d="M8 7h4M8 10h4M8 13h2"/></svg><em>日志</em></a>
+    </nav>
+    </div>
+    <div class="drawer-tree">
+      <div class="drawer-tree-title">文档目录</div>
+      <aside class="tree">
+    <div class="group">开始</div><a href="../index.html" class=""><span class="n">00</span>概览</a><a href="../guide/installation.html" class=""><span class="n">01</span>安装与接入</a>
+    <div class="group">概念</div><a href="../guide/adapter.html" class=""><span class="n">02</span>适配器</a><a href="../guide/components.html" class=""><span class="n">03</span>组件 API</a><a href="../guide/tools.html" class="on"><span class="n">04</span>前端工具</a><a href="../guide/runtime.html" class=""><span class="n">05</span>数据流与状态</a>
+    <div class="group">参考</div><a href="../guide/changelog.html" class=""><span class="n">06</span>更新日志</a>
+  </aside>
+    </div>
+  </div>
+
+<div class="stage">
+<div class="shell">
+<aside class="tree">
+    <div class="group">开始</div><a href="../index.html" class=""><span class="n">00</span>概览</a><a href="../guide/installation.html" class=""><span class="n">01</span>安装与接入</a>
+    <div class="group">概念</div><a href="../guide/adapter.html" class=""><span class="n">02</span>适配器</a><a href="../guide/components.html" class=""><span class="n">03</span>组件 API</a><a href="../guide/tools.html" class="on"><span class="n">04</span>前端工具</a><a href="../guide/runtime.html" class=""><span class="n">05</span>数据流与状态</a>
+    <div class="group">参考</div><a href="../guide/changelog.html" class=""><span class="n">06</span>更新日志</a>
+  </aside>
+
+
+<main class="article">
+<div class="pagehead"><span class="ph-deco" aria-hidden="true"></span><div class="crumbs"><a href="../index.html">文档</a><span class="sep">/</span><span>概念</span><span class="sep">/</span><span>前端工具</span></div>
+<h1><em>Concept 04</em>前端工具</h1>
+<p class="lede">工具让智能体"动手做事"。后端工具在服务端执行、页面只展示过程；前端工具在浏览器执行，还能挂一个 Vue 组件与用户交互。</p>
+<div class="badges"><span class="badge">defineTool</span><span class="badge">ToolRenderProps</span><span class="badge">Vue 组件</span></div></div>
+
+<section class="block">
+  <div class="block-head"><span class="idx">01</span><h2>defineTool</h2></div>
+  <div class="prose">
+  <div class="code">
+  <div class="code-head"><span class="file">tools/getBrowserTime.ts</span><button data-copy="">复制</button></div>
+  <div class="code-body"><pre>import { defineTool } from "@auipage/vue";
+
+export default defineTool({
+    name: "getBrowserTime",
+    description: "获取当前浏览器所在设备的本地日期与时间",
+    parameters: { type: "object", properties: {}, required: [] },
+    execute() {
+        return new Date().toLocaleString();
+    },
+});</pre></div>
+</div>
+  <div class="table-wrap"><table class="spec">
+  <thead><tr><th>字段</th><th>必填</th><th>说明</th></tr></thead>
+  <tbody><tr><td><code>name</code></td><td>是</td><td>工具名，对应模型工具描述里的 <code>function.name</code>。</td></tr><tr><td><code>description</code></td><td>是</td><td>给模型看的说明，写清“什么时候该用”。</td></tr><tr><td><code>parameters</code></td><td>是</td><td>入参 JSON Schema，无入参也要给空的 object。</td></tr><tr><td><code>execute</code></td><td>否</td><td>页面侧执行函数，可同步或异步；省略时按空执行兜底。</td></tr><tr><td><code>render</code></td><td>否</td><td>Vue 交互组件；缺省时 <code>execute</code> 的返回值就是最终结果。</td></tr></tbody>
+</table></div>
+</div>
+</section>
+
+<section class="block">
+  <div class="block-head"><span class="idx">02</span><h2>render 组件的 props</h2></div>
+  <div class="prose">
+  <p>实时态与历史回读态<b>共用一套 props</b>，组件既能交互、又能只读回显：</p>
+  <div class="code">
+  <div class="code-head"><span class="file">types.ts</span><button data-copy="">复制</button></div>
+  <div class="code-body"><pre>interface ToolRenderProps {
+    args: any;                                  // 模型解析出的入参
+    result?: any;                               // execute 的结果（异常时为错误对象）
+    status: "pending" | "success" | "error";    // execute 状态
+    call?: (result: unknown) =&gt; void;           // 【实时态】交还结果、结束挂起
+    uiResult?: unknown;                         // 【历史回读】当时交还的结果
+    uiStatus?: "success" | "error";             // 【历史回读】交互状态
+}</pre></div>
+</div>
+  <p style="margin-top:14px">判断规则只有一条：<b>有 <code>call</code> 是实时态，没有 <code>call</code> 是历史只读态</b>。</p>
+</div>
+</section>
+
+<section class="block">
+  <div class="block-head"><span class="idx">03</span><h2>交互式工具示例</h2></div>
+  <div class="prose">
+  <div class="code">
+  <div class="code-head"><span class="file">tools/askFavoriteFruit.ts</span><button data-copy="">复制</button></div>
+  <div class="code-body"><pre>&lt;script setup lang="ts"&gt;
+import { defineTool } from "@auipage/vue";
+import FruitPicker from "./FruitPicker.vue";
+
+const FRUITS = ["苹果", "香蕉", "橙子", "葡萄", "西瓜"];
+
+export default defineTool({
+    name: "askFavoriteFruit",
+    description: "当需要了解用户喜欢什么水果时使用",
+    parameters: { type: "object", properties: {}, required: [] },
+    execute() { return FRUITS; },
+    render: FruitPicker,
+});
+&lt;/script&gt;</pre></div>
+</div>
+  <div class="code">
+  <div class="code-head"><span class="file">FruitPicker.vue</span><button data-copy="">复制</button></div>
+  <div class="code-body"><pre>&lt;template&gt;
+<span class="c">    &lt;!-- 历史回读：没有 call，只读展示 --&gt;</span>
+    &lt;span v-if="!call"&gt;已选择：{{ uiResult }}&lt;/span&gt;
+
+<span class="c">    &lt;!-- 实时交互：拿到 execute 的候选列表 --&gt;</span>
+    &lt;div v-else class="fruit-picker"&gt;
+        &lt;p&gt;请选择你喜欢的水果：&lt;/p&gt;
+        &lt;button
+            v-for="fruit in (typeof result === 'object' ? result : [])"
+            :key="fruit"
+            type="button"
+            @click="call(fruit)"
+        &gt;{{ fruit }}&lt;/button&gt;
+    &lt;/div&gt;
+&lt;/template&gt;</pre></div>
+</div>
+  <p style="margin-top:14px">完整链路：<code>execute</code> 拿候选 → core 把 <code>{ render, status, result }</code> 交给页面 →
+  卡片进入 <code>executing</code> 并挂载组件 → 用户点击 → <code>call(fruit)</code> → core
+  <code>response("tool-result", ...)</code> 回传后端 → 再次回调写入 <code>uiResult</code>，组件转只读留在页面上。</p>
+</div>
+</section>
+
+<section class="block">
+  <div class="block-head"><span class="idx">04</span><h2>生命周期</h2></div>
+  <div class="prose">
+  <div class="code">
+  <div class="code-head"><span class="file">phase</span><button data-copy="">复制</button></div>
+  <div class="code-body"><pre>pending → executing → result</pre></div>
+</div>
+  <div class="table-wrap"><table class="spec">
+  <thead><tr><th>phase</th><th>触发</th><th>表现</th><th>call</th></tr></thead>
+  <tbody><tr><td><code>pending</code></td><td>流中首次收到 tool-call</td><td>名称 + 入参 + 运行中</td><td>无</td></tr><tr><td><code>executing</code></td><td>带 render 的工具 execute 完成</td><td>挂载 render 组件</td><td>有</td></tr><tr><td><code>result</code></td><td>后端工具 / 无 render 工具结束</td><td>结果卡片</td><td>无</td></tr></tbody>
+</table></div>
+  <p style="margin-top:14px">带 render 的工具在交互完成后仍然停在 <code>executing</code>：
+  <code>call</code> 被清空、<code>uiResult</code> 写入，组件自然切到只读态，节点不重建。</p>
+</div>
+</section>
+
+<section class="block">
+  <div class="block-head"><span class="idx">05</span><h2>历史回读与后端工具</h2></div>
+  <div class="prose">
+  <ul>
+    <li><b>工具仍注册</b>：历史里还原为只读 <code>executing</code>，用 <code>uiResult</code> / <code>uiStatus</code> 驱动。</li>
+    <li><b>工具已下线或无 render</b>：降级为 <code>result</code> 形态的结果卡片。</li>
+    <li><b>后端工具</b>：对页面透明，流里同样是 <code>tool-call</code> 但没有 <code>render</code>，直接
+      <code>pending → result</code>，无需注册。</li>
+  </ul>
+  <div class="note" style="margin-top:14px">
+    <b>所以 render 组件必须处理两种态。</b>只写实时分支、忽略 <code>!call</code>，
+    历史会话里这块工具就会渲染失败。
+  </div>
+</div>
+</section>
+
+<section class="block">
+  <div class="block-head"><span class="idx">06</span><h2>注册</h2></div>
+  <div class="prose">
+  <div class="code">
+  <div class="code-head"><span class="file">App.vue</span><button data-copy="">复制</button></div>
+  <div class="code-body"><pre>import getBrowserTime from "./tools/getBrowserTime";
+import askFavoriteFruit from "./tools/askFavoriteFruit";
+
+const tools = [getBrowserTime, askFavoriteFruit];
+
+&lt;AuiRuntimeProvider :adapter="adapter" :tools="tools"&gt;</pre></div>
+</div>
+</div>
+</section>
+
+<nav class="pager">
+<a href="../guide/components.html"><span class="dir">← 上一页</span><span class="name">组件 API</span></a>
+<a class="next" href="../guide/runtime.html"><span class="dir">下一页 →</span><span class="name">数据流与状态</span></a>
+  </nav>
+</main>
+
+</div>
+</div>
+<footer class="foot">
+    <div class="foot-inner">
+      <div class="col">
+        <h4>开始</h4>
+        <a href="../index.html">概览</a>
+        <a href="../guide/installation.html">安装与接入</a>
+        <a href="../guide/changelog.html">更新日志</a>
+      </div>
+      <div class="col">
+        <h4>概念</h4>
+        <a href="../guide/adapter.html">适配器</a>
+        <a href="../guide/components.html">组件 API</a>
+        <a href="../guide/tools.html">前端工具</a>
+        <a href="../guide/runtime.html">数据流与状态</a>
+      </div>
+      <div class="col">
+        <h4>资源</h4>
+        <a href="https://github.com/handless-ui/auipage-vue" target="_blank" rel="noopener">GitHub 仓库</a>
+        <a href="https://www.npmjs.com/package/@auipage/vue" target="_blank" rel="noopener">npm 包</a>
+        <a href="https://github.com/handless-ui/auipage" target="_blank" rel="noopener">auipage 框架</a>
+      </div>
+      <div class="sign">
+        <b>@auipage/vue</b> — 智能体的 Vue 无头组件库<br>
+        MIT License · Copyright (c) <a href="https://zxl20070701.github.io/notebook/home.html" target="_blank" rel="noopener">zxl20070701</a>
+      </div>
+    </div>
+  </footer>
+
+<script src="../assets/js/docs.js?v=bc528867"></script>
+
+
+</body>
+</html>

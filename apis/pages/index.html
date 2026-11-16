@@ -1,0 +1,113 @@
+<!--meta {"title": "@auipage/vue · 智能体页面的无头组件库", "desc": "auipage/vue 提供 ChatContent、ThreadList 与三套适配器，状态与交互归库、样式归你。", "section": "home", "demos": true}-->
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="kicker">headless · vue 3 · agent ui</div>
+      <h1>让对话界面<br><span>只留下状态</span>。</h1>
+      <p class="lede">
+        @auipage/vue 是智能体页面的 <b>Headless 组件库</b>：消息流、会话列表、输入框的状态机与交互归它，
+        一个像素的样式都不带。后端接适配器，视觉接作用域插槽 —— 你的设计系统原封不动。
+      </p>
+      <div class="install">
+        <span class="dollar">$</span>
+        <code>npm install @auipage/vue</code>
+        <button data-copy="npm install @auipage/vue">复制</button>
+      </div>
+      <div class="hero-actions">
+        <a class="btn" href="{{base}}guide/installation.html">开始接入</a>
+        <a class="btn btn-ghost" href="{{base}}guide/components.html">看插槽设计</a>
+      </div>
+    </div>
+    <div class="toc">
+      <h2>目录</h2>
+      <a href="{{base}}guide/installation.html"><span class="no">01</span>安装与接入<span class="kind">guide</span></a>
+      <a href="{{base}}guide/adapter.html"><span class="no">02</span>适配器<span class="kind">concept</span></a>
+      <a href="{{base}}guide/components.html"><span class="no">03</span>组件 API<span class="kind">concept</span></a>
+      <a href="{{base}}guide/tools.html"><span class="no">04</span>前端工具<span class="kind">concept</span></a>
+      <a href="{{base}}guide/runtime.html"><span class="no">05</span>数据流与状态<span class="kind">concept</span></a>
+      <a href="{{base}}guide/changelog.html"><span class="no">06</span>更新日志<span class="kind">log</span></a>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <section class="section">
+    <div class="section-head"><span class="no">01</span><h2>三个设计取向</h2></div>
+    <div class="cards">
+      <div class="card">
+        <div class="label">Headless</div>
+        <h3>只给状态和钩子</h3>
+        <p>每个组件渲染固定标签，挂稳定的 <code>aui-*</code> class 与 <code>data-*</code> 属性，
+           没有一行内置 CSS —— 风格问题永远不会变成库的问题。</p>
+      </div>
+      <div class="card">
+        <div class="label">Slot</div>
+        <h3>作用域插槽，不是配置</h3>
+        <p><code>Messages</code> 给你 <code>{ message }</code>、<code>Parts</code> 给你 <code>{ part }</code>，
+           模板里 <code>v-if</code> 收窄类型，想渲染什么就是你自己的模板。</p>
+      </div>
+      <div class="card">
+        <div class="label">Adapter</div>
+        <h3>后端无关</h3>
+        <p>三套适配器把 HTTP、SSE、WebSocket 挡在库外，换模型、换服务端只改适配器，
+           组件树一行不动。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><span class="no">02</span><h2>组件总览</h2></div>
+    <div class="table-wrap"><table class="spec">
+  <thead><tr><th>组件</th><th>渲染标签</th><th>作用</th></tr></thead>
+  <tbody><tr><td><code>ChatContent.Root</code></td><td><code>div</code></td><td>聊天区域根容器</td></tr><tr><td><code>ChatContent.Viewport</code></td><td><code>div</code></td><td>滚动视口，新消息与流式增量自动滚到底</td></tr><tr><td><code>ChatContent.Messages</code></td><td><code>div</code></td><td>遍历消息，提供 <code>{ message }</code> 插槽</td></tr><tr><td><code>ChatContent.Parts</code></td><td><code>span</code></td><td>遍历片段，提供 <code>{ part }</code> 插槽</td></tr><tr><td><code>Composer.Root / Input / Send</code></td><td><code>form</code> / <code>textarea</code> / <code>button</code></td><td>输入区三件，执行中自动禁用发送</td></tr><tr><td><code>ThreadList.*</code></td><td><code>div</code> / <code>button</code> / <code>span</code></td><td>会话的新建、切换、归档、删除</td></tr></tbody>
+</table></div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><span class="no">03</span><h2>真实组件跑在这里</h2></div>
+    <div class="demo">
+      <div class="demo-head"><span class="dot"></span>LIVE WORKBENCH<span class="right">dist 产物 + 内存适配器 · 消息逐字流式输出</span></div>
+      <div class="demo-body" data-demo="workbench"></div>
+    </div>
+    <div class="note" style="margin-top:14px">
+      上面这块界面是 <code>dist/auipage-vue.iife.js</code> 加一份普通的 CSS：
+      组件没有样式，"好看"完全由文档自己这份样式表负责 —— 换成你的设计系统只是另一份 CSS 的事。
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><span class="no">04</span><h2>最小骨架</h2></div>
+    <div class="code">
+  <div class="code-head"><span class="file">App.vue</span><button data-copy="">复制</button></div>
+  <div class="code-body"><pre>&lt;template&gt;
+    &lt;AuiRuntimeProvider :adapter="adapter" :tools="tools"&gt;
+        &lt;ThreadList.Root&gt;
+            &lt;ThreadList.New&gt;新建会话&lt;/ThreadList.New&gt;
+            &lt;ThreadList.Items v-slot="{ thread }"&gt;
+                &lt;ThreadList.Item.Root&gt;
+                    &lt;ThreadList.Item.Trigger&gt;
+                        &lt;ThreadList.Item.Title /&gt;
+                    &lt;/ThreadList.Item.Trigger&gt;
+                &lt;/ThreadList.Item.Root&gt;
+            &lt;/ThreadList.Items&gt;
+        &lt;/ThreadList.Root&gt;
+
+        &lt;ChatContent.Root&gt;
+            &lt;ChatContent.Viewport&gt;
+                &lt;ChatContent.Messages v-slot&gt;
+                    &lt;ChatContent.Parts v-slot="{ part }"&gt;
+                        &lt;p v-if="part.type === 'text'"&gt;{{#raw}}{{ part.text }}{{/raw}}&lt;/p&gt;
+                        &lt;p v-else-if="part.type === 'thinking'"&gt;{{#raw}}{{ part.text }}{{/raw}}&lt;/p&gt;
+                    &lt;/ChatContent.Parts&gt;
+                &lt;/ChatContent.Messages&gt;
+            &lt;/ChatContent.Viewport&gt;
+            &lt;ChatContent.Composer.Root&gt;
+                &lt;ChatContent.Composer.Input /&gt;
+                &lt;ChatContent.Composer.Send&gt;发送&lt;/ChatContent.Composer.Send&gt;
+            &lt;/ChatContent.Composer.Root&gt;
+        &lt;/ChatContent.Root&gt;
+    &lt;/AuiRuntimeProvider&gt;
+&lt;/template&gt;</pre></div>
+</div>
+  </section>
+</div>

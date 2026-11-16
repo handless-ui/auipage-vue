@@ -26,6 +26,7 @@ export default defineConfig(({ command }) => ({
         rollupOptions: {
             external: ["vue"],
             output: {
+                // 键是模块导入名，值是 vue.global.prod.js 暴露的浏览器全局名。
                 globals: {
                     vue: "Vue"
                 }
